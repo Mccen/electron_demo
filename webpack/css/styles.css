@@ -1,0 +1,99 @@
+#user-panel {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 80%;
+  text-align: center;
+}
+
+#user-panel h1 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+#user-panel p {
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+#user-panel ul {
+  list-style-type: none;
+  margin-bottom: 2rem;
+}
+
+#user-panel li {
+  background-color: #eaeaea;
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#user-panel .device-info {
+  flex-grow: 1;
+}
+
+#user-panel .device-info b {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+#user-panel .device-info span {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+#user-panel .device-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#user-panel button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+#user-panel button:hover {
+  background-color: #0056b3;
+}
+
+body, html {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: block;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background-color: #0056b3;
+  display: block;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5%;
+  width:90%;
+  height:90%;
+  margin: 0 auto;
+}
+
+.left {
+  flex: 1;
+  background-color: aqua;
+  width:20%;
+
+  margin-top:5%;
+}
+.right{
+  background-color: cadetblue;
+  width:80%;
+}
