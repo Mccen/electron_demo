@@ -9,11 +9,11 @@ contextBridge.exposeInMainWorld('myAPI', {
   closeMain: () => ipcRenderer.send('close-main'),
 
 
+  getUserId: () => ipcRenderer.invoke('get-user-id'),
   checkUsername: (username) => ipcRenderer.invoke('check-username', username),
   authenticateUser: (username, password) => ipcRenderer.invoke('authenticate-user', username, password),
   registerUser: (username, password) => ipcRenderer.invoke('register-user', username, password),
   getUsername: () => ipcRenderer.invoke('get-username'),
-  getUserIdByUsername: (username) => ipcRenderer.invoke('get-user-id-by-username', username),
   getDeviceListByUserId: (userId) => ipcRenderer.invoke('get-device-list-by-user-id', userId),
   addDevice: (userId, deviceName) => ipcRenderer.invoke('add-device', userId, deviceName),
   removeDevice: (deviceId) => ipcRenderer.invoke('remove-device', deviceId),

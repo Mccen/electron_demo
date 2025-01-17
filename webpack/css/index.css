@@ -1,0 +1,75 @@
+/* 现有的基本样式保持不变 */
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.left {
+  width: 30%;
+  height: 100%;
+  padding: 1rem;
+  background-color: #f4f4f4;
+}
+
+.right {
+  width: 70%;
+  height: 100%;
+  padding: 1rem;
+  background-color: #e4e4e4;
+}
+
+
+/* 设置设备列表容器的高度和溢出属性以启用滚动 */
+#device-list {
+  max-height: 85vh; /* 根据需要调整 */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 8px;
+  -webkit-app-region: none;
+}
+
+/* 设备项的基本样式 */
+.device-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 4px;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+/* 设备信息和操作按钮的布局 */
+.device-info {
+  flex-grow: 1;
+}
+
+.device-actions {
+  display: flex;
+  gap: 8px; /* 按钮之间的间距 */
+}
+
+.device-actions button {
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+/* 可选：鼠标悬停效果 */
+.device-item:hover {
+  background-color: #f1f1f1;
+}
+
+/* 新增样式：使标题和按钮在同一行并保持适当的间距 */
+.header-with-button {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  margin-bottom: 1rem;
+}
+
+.header-with-button h3 {
+  margin: 0; /* 移除默认的外边距 */
+  margin-right: 1rem; /* 给标题右边留一些空间 */
+  flex-shrink: 0; /* 防止标题缩小 */
+}

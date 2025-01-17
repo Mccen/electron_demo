@@ -1,6 +1,5 @@
 const panel = document.getElementById('user-panel');
 const closeBtn = document.getElementById('close-btn');
-
 document.addEventListener('DOMContentLoaded', () => {
   UserPanel();
 });
@@ -15,6 +14,7 @@ closeBtn.addEventListener('click', () => {
   console.log('main-closeBtn');
   window.myAPI.closeMain();
 });
+
 // 显示自定义模态对话框
 function showModalDialog(message, callback) {
   const modal = document.createElement('div');
@@ -111,8 +111,10 @@ function showConfirmDialog(confirmMessage, callback) {
     }
   });
 }
+
 function UserPanel() {
   let userName = '';
+  let userId = '';
   async function setUserName() {
     const showname = document.getElementById('showusername');
     if (showname) {
@@ -131,7 +133,17 @@ function UserPanel() {
       console.warn('Element with ID "showusername" not found in the DOM.');
     }
   }
-  
+  // 获取用户ID
+  async function getUserId() {
+    try {
+      userId = await window.myAPI.getUserId();
+      console.log("User ID:", userId);
+      // 在这里你可以使用userId进行其他操作
+    } catch (error) {
+      console.error("Failed to get user ID:", error);
+    }
+  }
+
   async function listDevices() {
     if (!userName || typeof userName !== 'string') {
       console.error('Invalid username when listing devices:', userName);
@@ -140,7 +152,6 @@ function UserPanel() {
     }
 
     try {
-      const userId = await window.myAPI.getUserIdByUsername(userName);
       console.log('User ID:', userId); // 添加调试信息
       if (userId === null) {
         console.error('No user ID found for username:', userName);
@@ -163,22 +174,22 @@ function UserPanel() {
   function displayDevices(devices) {
     const deviceList = document.getElementById('device-list');
     deviceList.innerHTML = ''; // 清空设备列表
-
     if (Array.isArray(devices)) {
       devices.forEach(device => {
-        const listItem = document.createElement('li');
-        listItem.dataset.deviceId = device.DeviceID; // 存储设备 ID
-        listItem.innerHTML = `
-        <div class="device-info">
-          <b>${device.DeviceName}</b><br/>
-          <span>ID: ${device.DeviceID}</span>
-        </div>
-        <div class="device-actions">
-          <button class="edit-device">编辑</button>
-          <button class="remove-device">删除</button>
-        </div>
-      `;
-        deviceList.appendChild(listItem);
+          const listItem = document.createElement('li');
+          listItem.dataset.deviceId = device.DeviceID; // 存储设备 ID
+          listItem.className = 'device-item'; // 添加类名以便于应用样式
+          listItem.innerHTML = `
+              <div class="device-info">
+                  <b>${device.DeviceName}</b><br/>
+                  <span>ID: ${device.DeviceID}</span>
+              </div>
+              <div class="device-actions">
+                  <button class="edit-device">编辑</button>
+                  <button class="remove-device">删除</button>
+              </div>
+          `;
+          deviceList.appendChild(listItem);
       });
 
       // 添加事件监听器
@@ -247,7 +258,6 @@ function UserPanel() {
         showPromptDialog('请输入新设备的名称:', '', async (deviceName) => {
           if (deviceName) {
             try {
-              const userId = await window.myAPI.getUserIdByUsername(await window.myAPI.getUsername());
               if (userId) {
                 const added = await window.myAPI.addDevice(userId, deviceName);
                 if (added) {
@@ -269,8 +279,10 @@ function UserPanel() {
       });
     }
   }
-  // 初始化时立即设置用户名并列出设备
-  setUserName().then(listDevices);
+  // 初始化时立即设置用户名
+  setUserName();
+  // 初始化id并列出设备
+  getUserId().then(listDevices);
   //绑定按钮事件
   setupAddDeviceButton();
 }

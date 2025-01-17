@@ -28,7 +28,6 @@ function init(url) {
         y: y,
         resizable: false,
         frame: false, // 去除边框
-        transparent: true,
         autoHideMenuBar: true, // 自动隐藏菜单栏
         webPreferences: {
             nodeIntegration: false,       // 禁用 Node.js 集成
@@ -61,7 +60,6 @@ function createWindow(url) {
         width: windowWidth,
         height: windowHeight,
         frame: false, // 去除边框
-        transparent: true,
         autoHideMenuBar: true, // 自动隐藏菜单栏
         webPreferences: {
             nodeIntegration: true,       // 启用 Node.js 集成

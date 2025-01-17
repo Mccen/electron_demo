@@ -41,10 +41,14 @@ input:focus {
   border-color: #007bff;
   outline: none;
 }
-
-button[type=submit] {
-  width: 100%;
-  padding: 0.75rem;
+button:not(#close-btn) {
+  /* 移除固定的最小宽度和最大宽度 */
+  min-width: auto; /* 自动计算最小宽度 */
+  max-width: none; /* 取消最大宽度限制 */
+  
+  /* 确保按钮能够适应内容的大小 */
+  white-space: nowrap; /* 防止文本换行 */
+  padding: 0.75rem; /* 内边距 */
   background-color: #007bff;
   color: white;
   border: none;
@@ -55,7 +59,7 @@ button[type=submit] {
   -webkit-app-region: none;
 }
 
-button[type=submit]:hover {
+button:not(#close-btn):hover {
   background-color: #0056b3;
 }
 

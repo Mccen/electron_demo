@@ -67,12 +67,13 @@ ipcMain.handle('register-user', async (event, username, password) => {
 		throw error;
 	}
 });
-ipcMain.on('close-init',()=>{
+ipcMain.on('close-init', () => {
 	loader.closeInit();
 });
-ipcMain.on('close-main',()=>{
+ipcMain.on('close-main', () => {
 	loader.closeMain();
 })
+
 // 监听登录成功的消息
 ipcMain.on('login-successful', (event, username) => {
 	loader.closeInit();
@@ -104,25 +105,23 @@ ipcMain.handle('get-username', async (event) => {
 		throw error;
 	}
 });
-
 // 获取用户ID
-ipcMain.handle('get-user-id-by-username', async (event, username) => {
-	try {
-		return await new Promise((resolve, reject) => {
-			db.getUserIdByUsername(username, (err, userId) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(userId);
-				}
-			});
-		});
-	} catch (error) {
-		console.error('Error getting user ID by username:', error);
-		throw error;
-	}
+ipcMain.handle('get-user-id', async (event) => {
+    try {
+        return await new Promise((resolve, reject) => {
+            db.getUserIdByUsername(showusername, (err, userId) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(userId);
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error getting user ID from database:', error);
+        throw error;
+    }
 });
-
 // 获取设备列表
 ipcMain.handle('get-device-list-by-user-id', async (event, userId) => {
 	try {

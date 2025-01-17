@@ -5,25 +5,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../css/base.css" />
-  <link rel="stylesheet" href="../css/styles.css">
-
-
+  <link rel="stylesheet" href="../css/index.css">
   <title>用户面板</title>
 </head>
 
 <body>
-  <button id="close-btn"></button>
-  <div class="left">
-    <h2>用户面板</h2>
-    <p id="user">用户名: <span id="showusername"></span></p>
+  <div class="container">
+    <button id="close-btn"></button>
+    <div class="left">
+      <h2>用户面板</h2>
+      <p id="user">用户名: <span id="showusername"></span></p>
+    </div>
+    <div class="right">
+      <div class="header-with-button">
+        <h3>设备列表</h3>
+        <button id="add-device-button" class="mainBtn">添加设备</button>
+      </div>
+      <ul id="device-list">
+      </ul>
+    </div>
   </div>
-  <div class="right">
-    <h3>设备列表</h3>
-    <ul id="device-list">
-    </ul>
-    <button id="add-device-button">添加设备</button>
-  </div>
-
   <script src="../js/renderer.js"></script>
 </body>
 
