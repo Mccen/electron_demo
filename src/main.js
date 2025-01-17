@@ -70,6 +70,9 @@ ipcMain.handle('register-user', async (event, username, password) => {
 ipcMain.on('close-init',()=>{
 	loader.closeInit();
 });
+ipcMain.on('close-main',()=>{
+	loader.closeMain();
+})
 // 监听登录成功的消息
 ipcMain.on('login-successful', (event, username) => {
 	loader.closeInit();

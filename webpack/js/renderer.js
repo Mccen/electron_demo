@@ -1,15 +1,20 @@
+const panel = document.getElementById('user-panel');
+const closeBtn = document.getElementById('close-btn');
+
 document.addEventListener('DOMContentLoaded', () => {
-    UserPanel();
+  UserPanel();
 });
 
 // 监听 page-loaded 事件
 window.addEventListener('message', (event) => {
   if (event.data === 'page-loaded') {
-      UserPanel();
+    UserPanel();
   }
 });
-
-
+closeBtn.addEventListener('click', () => {
+  console.log('main-closeBtn');
+  window.myAPI.closeMain();
+});
 // 显示自定义模态对话框
 function showModalDialog(message, callback) {
   const modal = document.createElement('div');
@@ -73,7 +78,6 @@ function showPromptDialog(promptMessage, defaultValue, callback) {
       callback(null);
     }
   });
-
   // 聚焦到输入框
   promptInput.focus();
 }
@@ -92,17 +96,14 @@ function showConfirmDialog(confirmMessage, callback) {
       </div>
     `;
   document.body.appendChild(modal);
-
   const yesButton = document.getElementById('confirm-yes');
   const noButton = document.getElementById('confirm-no');
-
   yesButton.addEventListener('click', () => {
     document.body.removeChild(modal);
     if (typeof callback === 'function') {
       callback(true);
     }
   });
-
   noButton.addEventListener('click', () => {
     document.body.removeChild(modal);
     if (typeof callback === 'function') {
@@ -110,11 +111,8 @@ function showConfirmDialog(confirmMessage, callback) {
     }
   });
 }
-
 function UserPanel() {
-  const panel = document.getElementById('user-panel');
   let userName = '';
-
   async function setUserName() {
     const showname = document.getElementById('showusername');
     if (showname) {
@@ -133,7 +131,7 @@ function UserPanel() {
       console.warn('Element with ID "showusername" not found in the DOM.');
     }
   }
-
+  
   async function listDevices() {
     if (!userName || typeof userName !== 'string') {
       console.error('Invalid username when listing devices:', userName);
@@ -150,7 +148,7 @@ function UserPanel() {
         return;
       }
       const devices = await window.myAPI.getDeviceListByUserId(userId);
-      console.log('Devices:', devices); // 添加调试信息
+      console.log('Devices:', devices); // 添加调试信息 
       if (devices) {
         displayDevices(devices);
       } else {
@@ -241,8 +239,6 @@ function UserPanel() {
       showModalDialog('无法解析设备列表');
     }
   }
-
-
   // 绑定事件到现有的“添加设备”按钮
   function setupAddDeviceButton() {
     const addButton = document.getElementById('add-device-button');
@@ -277,6 +273,4 @@ function UserPanel() {
   setUserName().then(listDevices);
   //绑定按钮事件
   setupAddDeviceButton();
-
-
 }
