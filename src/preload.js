@@ -1,5 +1,4 @@
 const { contextBridge, ipcRenderer } = require('electron');
-
 contextBridge.exposeInMainWorld('myAPI', {
   sendLoginSuccessful: (username) => ipcRenderer.send('login-successful', username),
   navigateToLogin: () => ipcRenderer.send('navigate-to-login'),
@@ -18,4 +17,5 @@ contextBridge.exposeInMainWorld('myAPI', {
   addDevice: (userId, deviceName) => ipcRenderer.invoke('add-device', userId, deviceName),
   removeDevice: (deviceId) => ipcRenderer.invoke('remove-device', deviceId),
   updateDevice: (deviceId, newDeviceName) => ipcRenderer.invoke('update-device', deviceId, newDeviceName),
+  checkDeviceName: (userId, deviceName) => ipcRenderer.invoke('check-device-name', userId, deviceName),
 });

@@ -145,5 +145,15 @@ module.exports = {
       }
       callback(null, true);
     });
+  },
+  checkDeviceNameExists: (userId, deviceName, callback) => {
+    const sql = 'SELECT COUNT(*) AS count FROM device WHERE UserID = ? AND DeviceName = ?';
+    connection.execute(sql, [userId, deviceName], (err, results) => {
+      if (err) {
+        console.error('Error checking device name:', err);
+        return callback(err, null);
+      }
+      callback(null, results[0].count > 0);
+    });
   }
 };

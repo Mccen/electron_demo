@@ -1,87 +1,128 @@
 const { BrowserWindow, screen } = require('electron');
 const path = require('path');
-let mainWindow, initWindow;
-module.exports = {
-    init,
-    createWindow,
-    initLoadPage,
-    mainLoadPage,
-    closeInit,
-    closeMain
-};
-function init(url) {
-    // 确定窗口的大小
-    let windowWidth = 600;
-    let windowHeight = 500;
-    // 获取屏幕的尺寸
-    let displays = screen.getAllDisplays();
-    let primaryDisplay = displays[0]; // 通常使用主屏幕，你也可以根据需要选择其他屏幕
-    let screenWidth = primaryDisplay.workArea.width;
-    let screenHeight = primaryDisplay.workArea.height;
-    // 计算窗口的中心位置
-    let x = (screenWidth - windowWidth) / 2;
-    let y = (screenHeight - windowHeight) / 2;
-    initWindow = new BrowserWindow({
-        width: windowWidth,
-        height: windowHeight,
-        x: x,
-        y: y,
-        resizable: false,
-        frame: false, // 去除边框
-        autoHideMenuBar: true, // 自动隐藏菜单栏
-        webPreferences: {
-            nodeIntegration: false,       // 禁用 Node.js 集成
-            contextIsolation: true,     // 启用上下文隔离
-            preload: path.join(__dirname, 'preload.js') // 使用预加载脚本
-        }
-    });
-    initWindow.loadFile(path.join(__dirname, url));
-    // 监听页面加载完成事件
-    initWindow.webContents.on('did-finish-load', () => {
-        initWindow.webContents.send('page-loaded');
-    });
-}
 
-function createWindow(url) {
-    // 确定窗口的大小
-    let windowWidth = 1280;
-    let windowHeight = 720;
-    // 获取屏幕的尺寸
-    let displays = screen.getAllDisplays();
-    let primaryDisplay = displays[0]; // 通常使用主屏幕，你也可以根据需要选择其他屏幕
-    let screenWidth = primaryDisplay.workArea.width;
-    let screenHeight = primaryDisplay.workArea.height;
-    // 计算窗口的中心位置
-    let x = (screenWidth - windowWidth) / 2;
-    let y = (screenHeight - windowHeight) / 2;
-    mainWindow = new BrowserWindow({
-        x: x,
-        y: y,
-        width: windowWidth,
-        height: windowHeight,
-        frame: false, // 去除边框
-        autoHideMenuBar: true, // 自动隐藏菜单栏
-        webPreferences: {
-            nodeIntegration: true,       // 启用 Node.js 集成
-            contextIsolation: true,     // 启用上下文隔离
-            preload: path.join(__dirname, 'preload.js') // 使用预加载脚本
-        }
+// 窗口管理器
+const windowManager = {
+  main: null,
+  init: null,
+
+  createWindow(type, options = {}) {
+    const displays = screen.getAllDisplays();
+    const { workArea } = displays[0];
+    
+    // 基础配置
+    const baseOptions = {
+      x: Math.round((workArea.width - options.width) / 2),
+      y: Math.round((workArea.height - options.height) / 2),
+      webPreferences: {
+        contextIsolation: true,    // 必须开启
+        sandbox: true,             // 启用沙箱
+        preload: path.join(__dirname, 'preload.js'),
+        nodeIntegration: false,    // 默认禁用
+        enableRemoteModule: false, // 禁用远程模块
+        ...(options.webPreferences || {}) // 自定义配置
+      }
+    };
+
+    // 创建窗口实例
+    const win = new BrowserWindow({
+      ...baseOptions,
+      ...options,
+      // 保持webPreferences合并结果
+      webPreferences: {
+        ...baseOptions.webPreferences,
+        ...(options.webPreferences || {})
+      }
     });
-    mainWindow.loadFile(path.join(__dirname, url));
-    // 监听页面加载完成事件
-    mainWindow.webContents.on('did-finish-load', () => {
-        mainWindow.webContents.send('page-loaded');
+
+    // 窗口关闭处理
+    win.on('closed', () => {
+      this[type] = null;
     });
-}
-function initLoadPage(url) {
-    initWindow.loadFile(path.join(__dirname, url));
-}
-function mainLoadPage(url) {
-    mainWindow.loadFile(path.join(__dirname, url));
-}
-function closeInit() {
-    initWindow.close();
-}
-function closeMain() {
-    mainWindow.close();
-}
+
+    return win;
+  },
+
+  safeClose(windowInstance) {
+    if (windowInstance && !windowInstance.isDestroyed()) {
+      windowInstance.close();
+    }
+  }
+};
+
+module.exports = {
+  init(url) {
+    if (windowManager.init) return;
+    
+    windowManager.init = windowManager.createWindow('init', {
+      width: 600,
+      height: 500,
+      resizable: false,
+      frame: false,
+      webPreferences: {
+        // 特殊情况下允许nodeIntegration
+        nodeIntegration: true,
+        // 显式指定preload保证加载
+        preload: path.join(__dirname, 'preload.js')
+      }
+    });
+    
+    this.loadContent(windowManager.init, url);
+  },
+
+  createWindow(url) {
+    if (windowManager.main) {
+      windowManager.main.focus();
+      return;
+    }
+
+    windowManager.main = windowManager.createWindow('main', {
+      width: 800,
+      height: 600,
+      minWidth: 800,
+      minHeight: 600,
+      frame: false,
+      webPreferences: {
+        // 其他窗口保持默认安全设置
+        additionalArguments: ['--enable-sandbox']
+      }
+    });
+
+    this.loadContent(windowManager.main, url);
+  },
+
+  loadContent(win, url) {
+    if (win && !win.isDestroyed()) {
+      const fullPath = path.join(__dirname, url);
+      win.loadFile(fullPath)
+        .then(() => {
+          // 开发模式自动打开调试工具
+          if (process.env.NODE_ENV === 'development') {
+            win.webContents.openDevTools({ mode: 'detach' });
+          }
+        })
+        .catch(err => {
+          console.error(`加载文件失败: ${fullPath}`, err);
+          win.webContents.send('load-error', err.message);
+        });
+    }
+  },
+
+  initLoadPage(url) {
+    this.loadContent(windowManager.init, url);
+  },
+
+  mainLoadPage(url) {
+    this.loadContent(windowManager.main, url);
+  },
+
+  closeInit() {
+    windowManager.safeClose(windowManager.init);
+    windowManager.init = null;
+  },
+
+  closeMain() {
+    windowManager.safeClose(windowManager.main);
+    windowManager.main = null;
+  }
+};
