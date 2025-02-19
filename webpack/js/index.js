@@ -5,7 +5,8 @@ const DOM = {
   closeBtn: document.getElementById('close-btn'),
   deviceList: document.getElementById('device-list'),
   addDeviceBtn: document.getElementById('add-device-button'),
-  usernameDisplay: document.getElementById('showusername')
+  usernameDisplay: document.getElementById('showusername'),
+  openPanelBtn: document.getElementById('open-panel-button'),
 };
 
 // ========================
@@ -37,6 +38,7 @@ function setupEventListeners() {
   DOM.closeBtn.addEventListener('click', handleCloseApp);
   DOM.addDeviceBtn.addEventListener('click', handleAddDevice);
   DOM.deviceList.addEventListener('click', handleDeviceActions);
+  DOM.openPanelBtn.addEventListener('click', handleOpenPanel);
 }
 
 // ========================
@@ -45,7 +47,9 @@ function setupEventListeners() {
 function handleCloseApp() {
   window.myAPI.closeMain();
 }
-
+function handleOpenPanel() {
+  window.myAPI.openPanel();
+}
 function handleDeviceActions(event) {
   const target = event.target;
   const deviceItem = target.closest('.device-item');

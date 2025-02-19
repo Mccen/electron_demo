@@ -5,7 +5,8 @@ const path = require('path');
 const windowManager = {
   main: null,
   init: null,
-
+  panel: null,
+  // 创建窗口实例
   createWindow(type, options = {}) {
     const displays = screen.getAllDisplays();
     const { workArea } = displays[0];
@@ -51,9 +52,8 @@ const windowManager = {
 };
 
 module.exports = {
-  init(url) {
+  createInit(url) {
     if (windowManager.init) return;
-    
     windowManager.init = windowManager.createWindow('init', {
       width: 600,
       height: 500,
@@ -91,6 +91,23 @@ module.exports = {
     this.loadContent(windowManager.main, url);
   },
 
+  createPanel(url){
+    if (windowManager.panel) {
+      windowManager.panel.focus();
+      return;
+    }
+    windowManager.panel = windowManager.createWindow('panel', {
+      minWidth: 1280,
+      minHeight: 720,
+      fullscreen: true,
+      frame: false,
+      webPreferences: {
+        // 其他窗口保持默认安全设置
+        additionalArguments: ['--enable-sandbox']
+      }
+    });
+    this.loadContent(windowManager.panel, url);
+  },
   loadContent(win, url) {
     if (win && !win.isDestroyed()) {
       const fullPath = path.join(__dirname, url);
@@ -116,6 +133,10 @@ module.exports = {
     this.loadContent(windowManager.main, url);
   },
 
+  panelLoadPage(url){
+    this.loadContent(windowManager.panel, url);
+  },
+
   closeInit() {
     windowManager.safeClose(windowManager.init);
     windowManager.init = null;
@@ -124,5 +145,10 @@ module.exports = {
   closeMain() {
     windowManager.safeClose(windowManager.main);
     windowManager.main = null;
+  },
+
+  closePanel(){
+    windowManager.safeClose(windowManager.panel);
+    windowManager.panel = null;
   }
 };

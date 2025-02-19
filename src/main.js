@@ -1,10 +1,10 @@
-const { app, ipcMain } = require('electron')
+const { app, ipcMain, globalShortcut  } = require('electron')
 const db = require('./connect.js') // 数据库模块
 const loader = require('./pageLoader.js') // 页面加载器
 let showusername = 'unknown'
 
 app.on('ready', () => {
-  loader.init('../webpack/html/login.html')
+  loader.createInit('../webpack/html/login.html')
 })
 
 app.on('window-all-closed', () => {
@@ -87,6 +87,16 @@ ipcMain.handle('check-device-name', async (_, userId, deviceName) => {
 // 事件监听
 ipcMain.on('close-init', () => loader.closeInit())
 ipcMain.on('close-main', () => loader.closeMain())
+
+
+ipcMain.on('open-panel',()=>{
+  loader.createPanel('../webpack/html/panel.html');
+  // 注册 Esc 键全局快捷键（仅当 Panel 存在时生效）
+  globalShortcut.register('Escape', () => {
+      loader.closePanel();
+      globalShortcut.unregister('Escape');
+  });
+})
 
 ipcMain.on('login-successful', (_, username) => {
   showusername = username

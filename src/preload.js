@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('myAPI', {
   navigateToRegister: () => ipcRenderer.send('navigate-to-register'),
   closeInit: () => ipcRenderer.send('close-init'),
   closeMain: () => ipcRenderer.send('close-main'),
-
+  openPanel: () => ipcRenderer.send('open-panel'),
 
   getUserId: () => ipcRenderer.invoke('get-user-id'),
   checkUsername: (username) => ipcRenderer.invoke('check-username', username),
