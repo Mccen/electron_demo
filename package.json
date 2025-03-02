@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/main.js",
   "scripts": {
-    "mdev":"nodemon --exec electron .",
+    "mdev": "nodemon --exec electron .",
     "start": "electron .",
     "test": "electron test",
     "package": "electron-forge package",
@@ -33,5 +33,6 @@
     "express": "^4.21.1",
     "mysql2": "^3.11.5",
     "uuid": "^11.0.3"
-  }
+  },
+  "keywords": []
 }
