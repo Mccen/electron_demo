@@ -3,7 +3,7 @@
       "host": "localhost",
       "port": 3306,
       "user": "mccen",
-      "password": "root",
+      "password": "Mccen@1234",
       "database": "twin"
     },
     "mqtt": {

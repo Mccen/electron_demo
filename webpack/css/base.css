@@ -41,7 +41,7 @@ input:focus {
   border-color: #007bff;
   outline: none;
 }
-button:not(#close-btn) {
+button:not(.total-close-btn) {
   /* 移除固定的最小宽度和最大宽度 */
   min-width: auto; /* 自动计算最小宽度 */
   max-width: none; /* 取消最大宽度限制 */
@@ -59,7 +59,7 @@ button:not(#close-btn) {
   -webkit-app-region: none;
 }
 
-button:not(#close-btn):hover {
+button:not(.total-close-btn):hover {
   background-color: #0056b3;
 }
 
@@ -155,7 +155,7 @@ a {
   margin-top: 0.5rem;
 }
 
-#close-btn {
+.total-close-btn {
   width: 40px;
   height: 40px;
   position: fixed;
@@ -169,8 +169,8 @@ a {
 }
 
 /* 绘制叉号 */
-#close-btn::before,
-#close-btn::after {
+.total-close-btn::before,
+.total-close-btn::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -179,20 +179,20 @@ a {
   height: 2px;
   background-color: rgb(7, 7, 7);
 }
-#close-btn::before {
+.total-close-btn::before {
   transform: translate(-50%, -50%) rotate(45deg);
 }
-#close-btn::after {
+.total-close-btn::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 /* 悬停效果 */
-#close-btn:hover {
+.total-close-btn:hover {
   background-color: red;
 }
 
 /* 更新叉号颜色为白色以适应背景变化 */
-#close-btn:hover::before,
-#close-btn:hover::after {
+.total-close-btn:hover::before,
+.total-close-btn:hover::after {
   background-color: #f4f4f4;
 }

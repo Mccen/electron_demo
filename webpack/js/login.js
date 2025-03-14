@@ -1,6 +1,9 @@
-const loginForm = document.getElementById('login-form');
-const closeBtn = document.getElementById('close-btn');
-closeBtn.addEventListener('click', () => {
+DOM = {
+    loginForm : document.getElementById('login-form'),
+    totalCloseBtn : document.getElementById('total-close-btn'),
+}
+
+DOM.totalCloseBtn.addEventListener('click', () => {
     window.myAPI.closeInit();
 });
 document.addEventListener('DOMContentLoaded', function () {
@@ -14,7 +17,7 @@ window.addEventListener('message', (event) => {
 });
 
 function loginFunc() {
-    loginForm.addEventListener('submit', async (event) => {
+    DOM.loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
@@ -23,11 +26,11 @@ function loginFunc() {
             if (isAuthenticated) {
                 window.myAPI.sendLoginSuccessful(username); // 传递用户名参数
             } else {
-                showNoticeDialog('登录失败，请检查账号或密码');
+                showNoticeDialog('登录失败','请检查账号或密码');
             }
         } catch (error) {
             console.error('Error during login:', error);
-            showNoticeDialog('登录过程中发生错误，请稍后再试');
+            showNoticeDialog('登录失败','登录过程中发生错误，请稍后再试');
         }
     });
 }

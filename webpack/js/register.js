@@ -1,6 +1,10 @@
-const registerForm = document.getElementById('register-form');
-const closeBtn = document.getElementById('close-btn');
-closeBtn.addEventListener('click', () => {
+DOM = {
+    registerForm : document.getElementById('register-form'),
+    totalCloseBtn : document.getElementById('total-close-btn'),
+}
+
+
+DOM.totalCloseBtn.addEventListener('click', () => {
     window.myAPI.closeInit();
 });
 document.addEventListener('DOMContentLoaded', function () {
@@ -57,7 +61,7 @@ function registerFunc() {
             }
         });
         // 在提交表单前再次检查用户名
-        registerForm.addEventListener('submit', async (event) => {
+        DOM.registerForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -65,18 +69,17 @@ function registerFunc() {
             // 如果用户名已存在，阻止表单提交
             const usernameStatus = document.getElementById('username-status');
             if (usernameStatus && usernameStatus.textContent) {
-                showNoticeDialog('请使用其他用户名');
+                showNoticeDialog('注册失败','请使用其他用户名');
                 return;
             }
 
             try {
                 const isRegistered = await window.myAPI.registerUser(username, password);
                 if (isRegistered) {
-                    showNoticeDialog('注册成功!', () => {
-                        window.myAPI.registrationSuccessful(); // 导航到登录页面
-                    });
+                    showNoticeDialog('注册成功!','');
+                    window.myAPI.registrationSuccessful(); // 导航到登录页面
                 } else {
-                    showNoticeDialog('注册失败');
+                    showNoticeDialog('注册失败','请稍后再试');
                 }
             } catch (error) {
                 console.error('Error during registration:', error);

@@ -2,11 +2,11 @@
 // 常量与DOM引用
 // ========================
 const DOM = {
-  closeBtn: document.getElementById('close-btn'),
+  totalCloseBtn: document.getElementById('total-close-btn'),
   deviceList: document.getElementById('device-list'),
   addDeviceBtn: document.getElementById('add-device-button'),
   usernameDisplay: document.getElementById('showusername'),
-  openPanelBtn: document.getElementById('open-panel-button'),
+  openPanelBtn: document.getElementById('open-panel-button')
 };
 
 // ========================
@@ -21,48 +21,43 @@ let appState = {
 // 初始化入口
 // ========================
 function initializeApp() {
-  try {
-    setupEventListeners();
-    loadUserData()
-      .then(loadDevices)
-      .catch(handleGlobalError);
-  } catch (error) {
-    handleGlobalError(error);
-  }
+  setupEventListeners();
+  loadUserData().then(loadDevices);
 }
 
 // ========================
 // 事件监听配置
 // ========================
 function setupEventListeners() {
-  DOM.closeBtn.addEventListener('click', handleCloseApp);
-  DOM.addDeviceBtn.addEventListener('click', handleAddDevice);
-  DOM.deviceList.addEventListener('click', handleDeviceActions);
-  DOM.openPanelBtn.addEventListener('click', handleOpenPanel);
+  DOM.totalCloseBtn?.addEventListener('click', handleCloseApp);
+  DOM.addDeviceBtn?.addEventListener('click', handleAddDevice);
+  DOM.openPanelBtn?.addEventListener('click', handleOpenPanel);
+  
+  DOM.deviceList?.addEventListener('click', function(event) {
+    const target = event.target;
+    const deviceItem = target.closest('.device-item');
+    if (!deviceItem) return;
+
+    const deviceId = deviceItem.dataset.deviceId;
+    const deviceName = deviceItem.querySelector('b').textContent;
+
+    if (target.classList.contains('edit-device')) {
+      handleEditDevice(deviceId, deviceName);
+    } else if (target.classList.contains('remove-device')) {
+      handleRemoveDevice(deviceId);
+    }
+  });
 }
 
 // ========================
-// 事件处理器
+// 基础事件处理器
 // ========================
 function handleCloseApp() {
-  window.myAPI.closeMain();
+  window.myAPI?.closeMain?.();
 }
+
 function handleOpenPanel() {
-  window.myAPI.openPanel();
-}
-function handleDeviceActions(event) {
-  const target = event.target;
-  const deviceItem = target.closest('.device-item');
-  if (!deviceItem) return;
-
-  const deviceId = deviceItem.dataset.deviceId;
-  const deviceName = deviceItem.querySelector('b').textContent;
-
-  if (target.classList.contains('edit-device')) { // 修正语法错误
-    handleEditDevice(deviceId, deviceName);
-  } else if (target.classList.contains('remove-device')) { // 修正语法错误
-    handleRemoveDevice(deviceId);
-  }
+  window.myAPI?.openPanel?.();
 }
 
 // ========================
@@ -75,15 +70,10 @@ async function loadUserData() {
       window.myAPI.getUserId()
     ]);
     
-    if (!validateUserData(userName, userId)) {
-      throw new Error('Invalid user data');
-    }
-    
     appState = { userName, userId };
     DOM.usernameDisplay.textContent = userName;
   } catch (error) {
-    showNoticeDialog('用户数据加载失败');
-    throw error;
+    await showNoticeDialog('错误', '用户数据加载失败');
   }
 }
 
@@ -92,21 +82,17 @@ async function loadDevices() {
     const devices = await window.myAPI.getDeviceListByUserId(appState.userId);
     renderDeviceList(devices);
   } catch (error) {
-    showNoticeDialog('设备列表加载失败');
-    throw error;
+    await showNoticeDialog('错误', '设备列表加载失败');
   }
 }
 
 function renderDeviceList(devices) {
-  if (!Array.isArray(devices)) {
-    throw new TypeError('无效的设备数据格式');
-  }
-
+  if (!Array.isArray(devices)) return;
+  
   DOM.deviceList.innerHTML = devices.map(device => `
     <li class="device-item" data-device-id="${escapeHTML(device.DeviceID)}">
       <div class="device-info">
         <b>${escapeHTML(device.DeviceName)}</b>
-        </br>
         <span>ID: ${escapeHTML(device.DeviceID)}</span>
       </div>
       <div class="device-actions">
@@ -118,99 +104,89 @@ function renderDeviceList(devices) {
 }
 
 // ========================
-// 设备操作处理（新增校验逻辑）
+// 设备操作处理（完整版）
 // ========================
 async function handleAddDevice() {
-  showInputDialog('请输入新设备名称:', '', async (deviceName) => {
-    if (!deviceName) return;
+  try {
+    const input = await showDialogueDialog('添加设备', '请输入新设备名称:');
+    if (!input) return;
 
-    try {
-      // 客户端校验
-      const validationError = validateDeviceName(deviceName);
-      if (validationError) {
-        showNoticeDialog(validationError);
-        return;
-      }
-
-      // 服务端校验
-      const isDuplicate = await window.myAPI.checkDeviceName(appState.userId, deviceName);
-      if (isDuplicate) {
-        showNoticeDialog('设备名称已存在');
-        return;
-      }
-
-      const success = await window.myAPI.addDevice(appState.userId, deviceName);
-      if (success) {
-        await loadDevices();
-        showNoticeDialog('设备添加成功');
-      }
-    } catch (error) {
-      handleOperationError('添加设备', error);
+    // 客户端验证
+    const validationError = validateDeviceName(input);
+    if (validationError) {
+      await showNoticeDialog('验证失败', validationError);
+      return;
     }
-  });
+
+    // 服务端查重
+    const isDuplicate = await window.myAPI.checkDeviceName(appState.userId, input);
+    if (isDuplicate) {
+      await showNoticeDialog('操作失败', '设备名称已存在');
+      return;
+    }
+
+    // 提交数据
+    const success = await window.myAPI.addDevice(appState.userId, input);
+    if (success) {
+      await loadDevices();
+      await showNoticeDialog('操作成功', '设备添加成功');
+    }
+  } catch (error) {
+    await showNoticeDialog('操作失败', `设备添加失败: ${error.message}`);
+  }
 }
 
 async function handleEditDevice(deviceId, currentName) {
-  showInputDialog('请输入新名称:', currentName, async (newName) => {
-    if (!newName || newName === currentName) return;
+  try {
+    const input = await showDialogueDialog('编辑设备', '请输入新名称:', currentName);
+    if (!input) return;
 
-    try {
-      // 客户端校验
-      const validationError = validateDeviceName(newName);
-      if (validationError) {
-        showNoticeDialog(validationError);
-        return;
-      }
+    // 名称未修改直接返回
+    if (input === currentName) return;
 
-      // 服务端校验（排除当前设备）
-      const isDuplicate = await window.myAPI.checkDeviceName(appState.userId, newName);
-      if (isDuplicate) {
-        showNoticeDialog('设备名称已存在');
-        return;
-      }
-
-      const success = await window.myAPI.updateDevice(deviceId, newName);
-      if (success) {
-        await loadDevices();
-        showNoticeDialog('设备更新成功');
-      }
-    } catch (error) {
-      handleOperationError('更新设备', error);
+    // 客户端验证
+    const validationError = validateDeviceName(input);
+    if (validationError) {
+      await showNoticeDialog('验证失败', validationError);
+      return;
     }
-  });
+
+    // 服务端查重
+    const isDuplicate = await window.myAPI.checkDeviceName(appState.userId, input);
+    if (isDuplicate) {
+      await showNoticeDialog('操作失败', '设备名称已存在');
+      return;
+    }
+
+    // 更新数据
+    const success = await window.myAPI.updateDevice(deviceId, input);
+    if (success) {
+      await loadDevices();
+      await showNoticeDialog('操作成功', '设备更新成功');
+    }
+  } catch (error) {
+    await showNoticeDialog('操作失败', `设备更新失败: ${error.message}`);
+  }
 }
 
 async function handleRemoveDevice(deviceId) {
-  showConfirmDialog('确定要删除此设备吗？', async (confirmed) => {
+  try {
+    const confirmed = await showInquireDialog('删除确认', '确定要删除此设备吗？');
     if (!confirmed) return;
 
-    try {
-      const success = await window.myAPI.removeDevice(deviceId);
-      if (success) {
-        await loadDevices();
-        showNoticeDialog('设备删除成功');
-      }
-    } catch (error) {
-      handleOperationError('删除设备', error);
+    const success = await window.myAPI.removeDevice(deviceId);
+    if (success) {
+      await loadDevices();
+      await showNoticeDialog('操作成功', '设备删除成功');
     }
-  });
+  } catch (error) {
+    await showNoticeDialog('操作失败', `设备删除失败: ${error.message}`);
+  }
 }
 
 // ========================
-// 工具函数（新增校验方法）
+// 工具函数
 // ========================
-function validateUserData(userName, userId) {
-  return typeof userName === 'string' && userName.length > 0 && userId !== null;
-}
-
-function escapeHTML(str) {
-  return str.replace(/&/g, '&amp;')
-           .replace(/</g, '&lt;')
-           .replace(/>/g, '&gt;')
-           .replace(/"/g, '&quot;')
-           .replace(/'/g, '&#39;');
-}
-
 function validateDeviceName(name) {
   const MAX_NAME_LENGTH = 20;
   const INVALID_CHARS = /[<>%$#*]/;
@@ -230,148 +206,15 @@ function validateDeviceName(name) {
   return null;
 }
 
-// ========================
-// 增强版对话框功能
-// ========================
-function showNoticeDialog(message, callback) {
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.innerHTML = `
-    <div class="modal-content">
-      <p>${message}</p>
-      <button class="modal-confirm">确定</button>
-    </div>
-  `;
-
-  const confirmBtn = modal.querySelector('.modal-confirm');
-  confirmBtn.addEventListener('click', () => {
-    document.body.removeChild(modal);
-    callback?.();
-  });
-
-  document.body.appendChild(modal);
-  confirmBtn.focus();
-}
-
-function showInputDialog(promptMessage, defaultValue, callback) {
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.innerHTML = `
-    <div class="modal-content">
-      <p>${promptMessage}</p>
-      <input type="text" class="modal-input" value="${escapeHTML(defaultValue)}">
-      <div class="error-message" style="color:red;min-height:20px;margin:5px 0"></div>
-      <div class="modal-actions">
-        <button class="modal-confirm" disabled>确定</button>
-        <button class="modal-cancel">取消</button>
-      </div>
-    </div>
-  `;
-
-  const input = modal.querySelector('.modal-input');
-  const errorMsg = modal.querySelector('.error-message');
-  const confirmBtn = modal.querySelector('.modal-confirm');
-  const cancelBtn = modal.querySelector('.modal-cancel');
-
-  let lastCheckId = 0;
-  const validate = async () => {
-    const checkId = ++lastCheckId;
-    const value = input.value.trim();
-    
-    // 客户端校验
-    const validationError = validateDeviceName(value);
-    if (validationError) {
-      errorMsg.textContent = validationError;
-      confirmBtn.disabled = true;
-      return;
-    }
-
-    // 服务端校验
-    try {
-      const isDuplicate = await window.myAPI.checkDeviceName(appState.userId, value);
-      if (checkId !== lastCheckId) return; // 防止过时响应
-      
-      errorMsg.textContent = isDuplicate ? '设备名称已存在' : '';
-      confirmBtn.disabled = isDuplicate;
-    } catch (error) {
-      errorMsg.textContent = '校验服务不可用';
-      confirmBtn.disabled = true;
-    }
-  };
-
-  input.addEventListener('input', () => {
-    confirmBtn.disabled = true;
-    validate();
-  });
-
-  validate(); // 初始校验
-
-  const cleanup = () => document.body.removeChild(modal);
-  
-  confirmBtn.addEventListener('click', () => {
-    if (confirmBtn.disabled) return;
-    cleanup();
-    callback?.(input.value.trim());
-  });
-
-  cancelBtn.addEventListener('click', () => {
-    cleanup();
-    callback?.(null);
-  });
-
-  document.body.appendChild(modal);
-  input.focus();
-}
-
-function showConfirmDialog(message, callback) {
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.innerHTML = `
-    <div class="modal-content">
-      <p>${message}</p>
-      <div class="modal-actions">
-        <button class="modal-confirm">确定</button>
-        <button class="modal-cancel">取消</button>
-      </div>
-    </div>
-  `;
-
-  const confirmBtn = modal.querySelector('.modal-confirm');
-  const cancelBtn = modal.querySelector('.modal-cancel');
-
-  const cleanup = () => document.body.removeChild(modal);
-  
-  confirmBtn.addEventListener('click', () => {
-    cleanup();
-    callback?.(true);
-  });
-
-  cancelBtn.addEventListener('click', () => {
-    cleanup();
-    callback?.(false);
-  });
-
-  document.body.appendChild(modal);
-  confirmBtn.focus();
-}
-
-// ========================
-// 错误处理
-// ========================
-function handleGlobalError(error) {
-  console.error('全局错误:', error);
-  showNoticeDialog('应用程序发生错误，请重启');
-}
-
-function handleOperationError(operation, error) {
-  console.error(`${operation}操作失败:`, error);
-  showNoticeDialog(`${operation}操作失败，请稍后重试`);
+function escapeHTML(str) {
+  return str.replace(/&/g, '&amp;')
+           .replace(/</g, '&lt;')
+           .replace(/>/g, '&gt;')
+           .replace(/"/g, '&quot;')
+           .replace(/'/g, '&#39;');
 }
 
 // ========================
 // 启动应用程序
 // ========================
 document.addEventListener('DOMContentLoaded', initializeApp);
-window.addEventListener('message', (event) => {
-  if (event.data === 'page-loaded') initializeApp();
-});

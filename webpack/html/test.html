@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../js/dialog.js"></script>
+    </head>
+
+    <body>
+        <button id="c1">open notice</button>
+        <button id="c2">open inquire</button>
+        <button id="c3">open dialogue</button>
+        <script >
+            document.getElementById('c1').onclick = async function () {
+                await showNoticeDialog("hello", "12345678901234567890");           
+            }
+            document.getElementById('c2').onclick = async function () {
+                console.log( await showInquireDialog("hello", "12345678901234567890"));           
+            }
+            document.getElementById('c3').onclick = async function () {
+                console.log( await showDialogueDialog("hello", "12345678901234567890"));           
+            }
+        </script>
+    </body>
+</html>
