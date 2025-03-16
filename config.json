@@ -4,11 +4,10 @@
       "port": 3306,
       "user": "mccen",
       "password": "Mccen@1234",
-      "database": "twin"
+      "database": "test"
     },
     "mqtt": {
       "host": "localhost",
-      "port": 1883,
-      "topic": "test"
+      "port": 1883
     }
   }

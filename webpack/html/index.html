@@ -5,28 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/base.css" />
     <link rel="stylesheet" href="../css/index.css">
-    <script src = "../js/echarts.min.js"></script>
     <title>用户面板</title>
   </head>
 
   <body>
     <div class="container">
       <button class="total-close-btn" id="total-close-btn"></button>
-      <div class="left">
-        <h2>用户面板</h2>
-        <p id="user">用户名: <span id="showusername"></span></p>
-        <button id="open-panel-button" class="mainBtn">进入大屏</button>
-      </div>
-      <div class="right">
-        <div class="header-with-button">
-          <h3>设备列表</h3>
-          <button id="add-device-button" class="mainBtn">添加设备</button>
-        </div>
-        <ul id="device-list">
+      <div class="left" id="left">
+        <h2>用户名: <span id="showusername"></span></h2>
+        <ul>
+          <ol>
+            <button id="btn1">一号机器演示</button>
+          </ol>
+          <ol>
+            <button id="btn2">二号机器演示</button>
+          </ol>
+          <ol>
+            <button id="btn3">机械臂演示</button>
+          </ol>
+          <ol>
+            <button id="btn4">传送带演示</button>
+          </ol>
+          <ol>
+            <button id="btn5">冲洗</button>
+          </ol>
+          <ol>
+            <button id="btn6">全流程</button>
+          </ol>
+          <ol>
+            <button id="btn7">开启大屏</button>
+          </ol>
         </ul>
+
+      </div>
+      <div class="right" id="right">
+        <div id="graphic-container" class="graphic-container"></div>
       </div>
     </div>
     <script src="../js/dialog.js"></script>
-    <script src="../js/index.js"></script>
+    <script type="importmap">
+      {
+          "imports": {
+              "three": "../js/three/three.module.js"
+          }
+      }
+  </script>  
+    <script type="module" src="../js/index.js"></script>
   </body>
 </html>

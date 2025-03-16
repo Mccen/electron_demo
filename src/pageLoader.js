@@ -60,9 +60,8 @@ module.exports = {
       resizable: false,
       frame: false,
       webPreferences: {
-        // 特殊情况下允许nodeIntegration
-        nodeIntegration: true,
-        // 显式指定preload保证加载
+        nodeIntegration: false, // 建议设置为 false 以提高安全性
+        contextIsolation: true, // 开启上下文隔离
         preload: path.join(__dirname, 'preload.js')
       }
     });
@@ -83,15 +82,17 @@ module.exports = {
       minHeight: 600,
       frame: false,
       webPreferences: {
-        // 其他窗口保持默认安全设置
-        additionalArguments: ['--enable-sandbox']
+        hardwareAcceleration: true,
+        nodeIntegration: false, // 建议设置为 false 以提高安全性
+        contextIsolation: true, // 开启上下文隔离
+        preload: path.join(__dirname, 'preload.js')
       }
     });
 
     this.loadContent(windowManager.main, url);
   },
 
-  createPanel(url){
+  async createPanel(url){
     if (windowManager.panel) {
       windowManager.panel.focus();
       return;
@@ -102,8 +103,8 @@ module.exports = {
       fullscreen: true,
       frame: false,
       webPreferences: {
-        // 其他窗口保持默认安全设置
-        additionalArguments: ['--enable-sandbox']
+        nodeIntegration: false, // 建议设置为 false 以提高安全性
+        contextIsolation: true, // 开启上下文隔离
       }
     });
     this.loadContent(windowManager.panel, url);

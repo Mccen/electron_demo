@@ -7,6 +7,8 @@
     <title>数据中心</title>
     <link type="text/css" href="../css/panel.css" rel="stylesheet">
     <script src="../js/echarts.min.js"></script>
+    <script src="../js/panel.js"></script>
+
 </head>
 
 <body>
@@ -14,37 +16,40 @@
         <div class="main-title">数据中心</div>
         <div class="main-content">
             <div class="leftMain">
-                <ul class="leftMain_top">
-                    <li>
-                        <span class="data_list">6890.69</span>
-                    </li>
-                    <li>
-                        <span class="data_list">6090.99</span>
-                    </li>
-                    <li>
-                        <span class="data_list">2890.39</span>
-                    </li>
-                </ul>
-                <div class="leftMain_middle">
-                    <div class="leftMain_middle_top">
-                        <div class="chartmain_histogram" id="chartmain_histogram"></div>
-                        <script src="../js/panel_histogram.js"></script>
-                    </div>
-                    <div class="leftMain_middle_bottom">
-                        <div class="chartmain_line" id="chartmain_line"></div>
-                        <script src="../js/panel_line.js"></script>
+                <div class="leftMain_top">
+                    <div class="graphic-container" id="graphic-container"></div>
+                    <script type="importmap">
+                        {
+                            "imports": {
+                                "three": "../js/three/three.module.js"
+                            }
+                        }
+                    </script>
+                    <script type="module" src="../js/map.js"></script>
+                </div>
+                <div class="leftMain_bottom">
+                    <div class="chartmain_line" id="chartmain_line"></div>
+                    <script src="../js/panel_line.js"></script>
+                    <!-- 添加滚动通知容器 -->
+                    <div id="scroll-notices" class="scroll-notices">
+                        <ul id="notice-list"></ul>
+                        <script src="../js/notice_list.js"></script>
                     </div>
                 </div>
             </div>
             <div class="rightMain">
                 <div class="rightMain_top">
-                    <h3>饼状图</h3>
-                    <div class="biaoge" style="width:100%; height:30vh" id="chartmain_pie"></div>
+                    <div id="chartmain_pie"></div>
                     <script src="../js/panel_pie.js"></script>
                 </div>
                 <div class="rightMain_bottom">
-                    <h3>滚动列表</h3>
-                    <div class="biaoge_list" style="width:100%; height:36vh">
+                    <div class="list">
+                        <ul id="list">
+                            <li>在线时长：17</li>
+                            <li>在线设备：12</li>
+                            <li data-wheel='wheelNum'>已完成243</li>
+                            <li>服务器负载：54%</li>
+                        </ul>
                     </div>
                 </div>
             </div>

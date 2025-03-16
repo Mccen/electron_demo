@@ -1,21 +1,22 @@
 const { contextBridge, ipcRenderer } = require('electron');
-contextBridge.exposeInMainWorld('myAPI', {
-  sendLoginSuccessful: (username) => ipcRenderer.send('login-successful', username),
-  navigateToLogin: () => ipcRenderer.send('navigate-to-login'),
-  registrationSuccessful: () => ipcRenderer.send('registration-successful'),
-  navigateToRegister: () => ipcRenderer.send('navigate-to-register'),
-  closeInit: () => ipcRenderer.send('close-init'),
-  closeMain: () => ipcRenderer.send('close-main'),
-  openPanel: () => ipcRenderer.send('open-panel'),
 
-  getUserId: () => ipcRenderer.invoke('get-user-id'),
-  checkUsername: (username) => ipcRenderer.invoke('check-username', username),
-  authenticateUser: (username, password) => ipcRenderer.invoke('authenticate-user', username, password),
-  registerUser: (username, password) => ipcRenderer.invoke('register-user', username, password),
-  getUsername: () => ipcRenderer.invoke('get-username'),
-  getDeviceListByUserId: (userId) => ipcRenderer.invoke('get-device-list-by-user-id', userId),
-  addDevice: (userId, deviceName) => ipcRenderer.invoke('add-device', userId, deviceName),
-  removeDevice: (deviceId) => ipcRenderer.invoke('remove-device', deviceId),
-  updateDevice: (deviceId, newDeviceName) => ipcRenderer.invoke('update-device', deviceId, newDeviceName),
-  checkDeviceName: (userId, deviceName) => ipcRenderer.invoke('check-device-name', userId, deviceName),
+contextBridge.exposeInMainWorld('myAPI', {
+    sendLoginSuccessful: () => ipcRenderer.send('login-successful'),
+    navigateToLogin: () => ipcRenderer.send('navigate-to-login'),
+    registrationSuccessful: () => ipcRenderer.send('registration-successful'),
+    navigateToRegister: () => ipcRenderer.send('navigate-to-register'),
+    closeInit: () => ipcRenderer.send('close-init'),
+    closeMain: () => ipcRenderer.send('close-main'),
+    openPanel: () => ipcRenderer.send('open-panel'),
+
+
+    checkUsername: (username) => ipcRenderer.invoke('check-username', username),
+    authenticateUser: (username, password) => ipcRenderer.invoke('authenticate-user', username, password),
+    registerUser: (username, password) => ipcRenderer.invoke('register-user', username, password),
+    getDeviceListByUid: (uid) => ipcRenderer.invoke('get-device-list-by-uid', uid),
+    getHumidityDataByDevice: (did) => ipcRenderer.invoke('get-humidity-data-by-device', did),
+    getTemperatureDataByDevice: (did) => ipcRenderer.invoke('get-temperature-data-by-device', did),
+    getAlarmDataByDevice: (did) => ipcRenderer.invoke('get-alarm-data-by-device', did),
+    getUserInfo: () => ipcRenderer.invoke('get-user-info'),
 });
+    

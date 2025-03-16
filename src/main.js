@@ -1,120 +1,133 @@
-const { app, ipcMain, globalShortcut  } = require('electron')
-const db = require('./connect.js') // 数据库模块
-const loader = require('./pageLoader.js') // 页面加载器
-let showusername = 'unknown'
+const { app, ipcMain, globalShortcut } = require('electron');
+const db = require('./connect.js'); // 数据库模块
+const loader = require('./pageLoader.js'); // 页面加载器
+
+var userInfo = {
+  username: 'unknown',
+  uid: 0,
+  role: 'null'
+};
 
 app.on('ready', () => {
-  loader.createInit('../webpack/html/login.html')
-})
+  loader.createInit('../webpack/html/login.html');
+  // loader.createWindow('../webpack/html/index.html');
+});
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') { // 修复拼写错误
-    app.quit()
+  if (process.platform !== 'darwin') {
+    app.quit();
   }
-})
+});
 
 // IPC 通信处理
 ipcMain.handle('check-username', async (_, username) => {
   return new Promise((resolve, reject) => {
-    db.checkUsernameExists(username, (err, isAvailable) => {
-      err ? reject(err) : resolve(isAvailable)
-    })
-  })
-})
+    db.checkUsernameExists(username, (err, exits) => {
+      err ? reject(err) : resolve(!exits);
+    });
+  });
+});
 
 ipcMain.handle('authenticate-user', async (_, username, password) => {
   return new Promise((resolve, reject) => {
     db.authenticateUser(username, password, (err, isAuthenticated) => {
-      err ? reject(err) : resolve(isAuthenticated)
-    })
-  })
-})
+      if (err) {
+        reject(err);
+      } else if (isAuthenticated) {
+        // 这里假设数据库中有一个获取用户角色的方法
+        db.getUserRoleByUsername(username, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            const user = result[0] || {}; 
+            if (user.username && user.uid && user.role) {
+              userInfo.username = user.username; 
+              userInfo.uid = user.uid; 
+              userInfo.role = user.role; 
+              console.log('更新后的 userInfo:', userInfo);
+            } else {
+              console.error('数据库返回的用户信息格式错误:', result);
+            }
+            resolve(isAuthenticated);
+          }
+        });
+      } else {
+        // 当认证失败时，也要调用 resolve 方法
+        resolve(isAuthenticated);
+      }
+    });
+  });
+});
 
 ipcMain.handle('register-user', async (_, username, password) => {
   return new Promise((resolve, reject) => {
     db.registerUser(username, password, (err, isRegistered) => {
-      err ? reject(err) : resolve(isRegistered)
-    })
-  })
-})
-
-ipcMain.handle('get-user-id', async () => {
-  return new Promise((resolve, reject) => {
-    db.getUserIdByUsername(showusername, (err, userId) => {
-      err ? reject(err) : resolve(userId)
-    })
-  })
-})
-
-ipcMain.handle('get-device-list-by-user-id', async (_, userId) => {
-  return new Promise((resolve, reject) => {
-    db.getDeviceListByUserId(userId, (err, devices) => {
-      err ? reject(err) : resolve(devices)
-    })
-  })
-})
-
-ipcMain.handle('add-device', async (_, userId, deviceName) => {
-  return new Promise((resolve, reject) => {
-    db.addDevice(userId, deviceName, (err, added) => {
-      err ? reject(err) : resolve(added)
-    })
-  })
-})
-
-ipcMain.handle('remove-device', async (_, deviceId) => {
-  return new Promise((resolve, reject) => {
-    db.removeDevice(deviceId, (err, removed) => {
-      err ? reject(err) : resolve(removed)
-    })
-  })
-})
-
-ipcMain.handle('update-device', async (_, deviceId, newDeviceName) => {
-  return new Promise((resolve, reject) => {
-    db.updateDevice(deviceId, newDeviceName, (err, updated) => {
-      err ? reject(err) : resolve(updated)
-    })
-  })
-})
-ipcMain.handle('check-device-name', async (_, userId, deviceName) => {
-	return new Promise((resolve, reject) => {
-	  db.checkDeviceNameExists(userId, deviceName, (err, exists) => {
-		err ? reject(err) : resolve(exists);
-	  });
-	});
+      err ? reject(err) : resolve(isRegistered);
+    });
   });
+});
+
+ipcMain.handle('get-device-list-by-uid', async (_, uid) => {
+  return new Promise((resolve, reject) => {
+    db.getDeviceListByUid(uid, (err, devices) => {
+      err ? reject(err) : resolve(devices);
+    });
+  });
+});
+
+ipcMain.handle('get-humidity-data-by-device', async (_, did) => {
+  return new Promise((resolve, reject) => {
+    db.getHumidityDataByDevice(did, (err, humidityData) => {
+      err ? reject(err) : resolve(humidityData);
+    });
+  });
+});
+
+ipcMain.handle('get-temperature-data-by-device', async (_, did) => {
+  return new Promise((resolve, reject) => {
+    db.getTemperatureDataByDevice(did, (err, temperatureData) => {
+      err ? reject(err) : resolve(temperatureData);
+    });
+  });
+});
+
+ipcMain.handle('get-alarm-data-by-device', async (_, did) => {
+  return new Promise((resolve, reject) => {
+    db.getAlarmDataByDevice(did, (err, alarmData) => {
+      err ? reject(err) : resolve(alarmData);
+    });
+  });
+});
+// 开放用户信息给渲染进程
+ipcMain.handle('get-user-info', () => {
+    return userInfo;
+});
+
 // 事件监听
-ipcMain.on('close-init', () => loader.closeInit())
-ipcMain.on('close-main', () => loader.closeMain())
-
-
-ipcMain.on('open-panel',()=>{
+ipcMain.on('close-init', () => loader.closeInit());
+ipcMain.on('close-main', () => loader.closeMain());
+ipcMain.on('open-panel', () => {
   loader.createPanel('../webpack/html/panel.html');
   // 注册 Esc 键全局快捷键（仅当 Panel 存在时生效）
   globalShortcut.register('Escape', () => {
-      loader.closePanel();
-      globalShortcut.unregister('Escape');
+    loader.closePanel();
+    globalShortcut.unregister('Escape');
   });
-})
+});
 
-ipcMain.on('login-successful', (_, username) => {
-  showusername = username
-  loader.closeInit()
-  loader.createWindow('../webpack/html/index.html')
-})
+ipcMain.on('login-successful', () => {
+  loader.closeInit();
+  loader.createWindow('../webpack/html/index.html');
+});
 
 ipcMain.on('navigate-to-login', () => {
-  loader.initLoadPage('../webpack/html/login.html')
-})
+  loader.initLoadPage('../webpack/html/login.html');
+});
 
 ipcMain.on('registration-successful', () => {
-  loader.initLoadPage('../webpack/html/login.html')
-})
+  loader.initLoadPage('../webpack/html/login.html');
+});
 
 ipcMain.on('navigate-to-register', () => {
-  loader.initLoadPage('../webpack/html/register.html')
-})
-
-// 同步返回用户名
-ipcMain.handle('get-username', () => showusername)
+  loader.initLoadPage('../webpack/html/register.html');
+});

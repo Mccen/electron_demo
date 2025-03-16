@@ -9,7 +9,7 @@ body {
 	min-height: 0;
 	min-width: 0;
 }
-/* CSS Document */
+
 .mcontainer {
 	position: fixed;
 	width: 100vw;
@@ -19,6 +19,8 @@ body {
 	grid-template-rows: 1fr 17fr;
 	overflow: hidden; 
 }
+
+
 
 /* 标题区域 */
 .mcontainer .main-title {
@@ -45,8 +47,7 @@ body {
 	width: 100%;
 	height: 100%;
 	display: grid;
-	grid-template-rows: 2fr 8fr;
-	/* background-color: rgb(93, 22, 22); */
+	grid-template-rows: 1fr 1fr;
 	overflow: hidden; 
 }
 
@@ -57,52 +58,45 @@ body {
 	grid-template-rows: 1fr 1fr;
 	overflow: hidden; 
 }
-
-.leftMain .leftMain_top {
+.leftMain .leftMain_top{
 	width: 100%;
 	height: 100%;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	overflow: hidden; 
-	justify-content: space-around;
+	padding: 4%;
 }
-.leftMain_top li {
-	align-items: center;
-    /* 初始基础尺寸，可根据需要调整 */
-    flex-basis: 33.333%; 
-    /* 允许收缩 */
-    flex-shrink: 1; 
-    /* 防止内容撑开 */
-    min-width: 0; 
-    box-sizing: border-box;
-    padding: 2px; /* 可根据需要调整内边距 */
-}
+.leftMain_top .graphic-container{
+	width: 100%;
+	height: 150%;
+	border: 2px solid rgb(30, 124, 155); /* 浅蓝色边框 */
+	border-radius: 10px; /* 圆角边框 */
 
-.leftMain_top .data_list {
-    /* 可根据需要调整样式 */
-    display: block;
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
-.leftMain .leftMain_middle {
+.leftMain .leftMain_bottom{
 	width: 100%;
 	height: 100%;
 	display: grid;
-	grid-template-rows: 1fr 1fr;
-	overflow: hidden; 
+	grid-template-columns: 2fr 1fr;
 }
-
-.leftMain_middle .leftMain_middle_top{
+.leftMain_bottom .chartmain_line{
 	width: 100%;
 	height: 100%;
-	/* background-color: rgb(245, 24, 201); */
+	padding: 4%;
 }
-.leftMain_middle .leftMain_middle_bottom{
+.leftMain_bottom .scroll-notices{
 	width: 100%;
-	height: 100%;
-	/* background-color: rgb(66, 225, 17); */
+	height: 80%;
+	padding: 4%;
+	overflow-y: hide;
+}
+#notice-list {
+    list-style-type: none;
+    padding: 0;
+}
+#notice-list li {
+    padding: 5px;
+	color:aliceblue;
+	background-color: rgba(240, 70, 43,0.5);
+    border-bottom: 1px solid #1a1818;
+	border-radius: 10px;
 }
 .chartmain_histogram,
 .chartmain_line,
@@ -115,12 +109,38 @@ body {
 
 .rightMain .rightMain_top {
 	width: 100%;
-	height: 50%;
+	height: 100%;
 	align-items: center;
+	padding: 5%;
 }
-
+.rightMain_top #chartmain_pie{
+	width: 100%;
+	height: 100%;
+	padding: 5%;
+	border: 2px solid rgb(30, 124, 155); /* 浅蓝色边框 */
+	border-radius: 10px; /* 圆角边框 */
+}
 .rightMain .rightMain_bottom {
 	width: 100%;
-	height: 50%;
+	height: 100%;
 	align-items: center;
+	padding: 5%;
+}
+.rightMain_bottom .list{
+	width: 100%;
+	height: 100%;
+	padding: 5%;
+	display: grid;
+	grid-template-rows:1fr 1fr 1fr 1fr;
+	border: 2px solid rgb(30, 124, 155); /* 浅蓝色边框 */
+	border-radius: 10px; /* 圆角边框 */
+}
+.list ul{
+	padding: 1%;
+	color:aliceblue;
+	list-style-type: none;
+}
+.list ul li{
+	padding: 1%;
+	border-bottom: 1px solid #1a1818;
 }

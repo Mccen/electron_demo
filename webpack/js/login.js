@@ -6,9 +6,7 @@ DOM = {
 DOM.totalCloseBtn.addEventListener('click', () => {
     window.myAPI.closeInit();
 });
-document.addEventListener('DOMContentLoaded', function () {
-    loginFunc();
-});
+
 // 监听 page-loaded 事件
 window.addEventListener('message', (event) => {
     if (event.data === 'page-loaded') {
@@ -24,7 +22,7 @@ function loginFunc() {
         try {
             const isAuthenticated = await window.myAPI.authenticateUser(username, password);
             if (isAuthenticated) {
-                window.myAPI.sendLoginSuccessful(username); // 传递用户名参数
+                await window.myAPI.sendLoginSuccessful();
             } else {
                 showNoticeDialog('登录失败','请检查账号或密码');
             }
@@ -34,3 +32,6 @@ function loginFunc() {
         }
     });
 }
+document.addEventListener('DOMContentLoaded', function () {
+    loginFunc();
+});

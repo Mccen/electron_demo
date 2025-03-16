@@ -18,14 +18,16 @@
 
     // 图表配置选项
     const option = {
-
         legend: {
             textStyle: {
                 color: '#fff',
                 fontSize: 12
             },
-            right: '10%',
-            data: ['折线一', '折线二']
+            data: ['压胎器', '喷涂器'],
+            show: true,
+            positions: {
+                bottom: 0,
+            }
         },
         grid: {
             // 根据容器大小合理调整
@@ -80,10 +82,10 @@
         },
         series: [
             {
-                name: '折线一',
+                name: '压胎器',
                 type: 'line',
                 stack: '总量',
-                data: [280, 102, 191, 134, 390, 230, 210],
+                data: [28, 28, 35, 30, 39, 45, 29],
                 itemStyle: {
                     normal: {
                         color: "#0efdff", // 折线点的颜色
@@ -95,10 +97,19 @@
                 }
             },
             {
-                name: '折线二',
+                name: '喷涂器',
                 type: 'line',
                 stack: '总量',
-                data: [100, 132, 131, 234, 290, 330, 110]
+                data: [30, 33, 41, 26, 38, 49, 24],
+                itemStyle: {
+                    normal: {
+                        color: "#fa0", // 折线点的颜色
+                        lineStyle: {
+                            color: "#fffd00", // 折线的颜色
+                            width: 2
+                        }
+                    }
+                }
             }
         ]
     };

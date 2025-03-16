@@ -3,12 +3,20 @@ DOM = {
 }
 //获取dom容器
 var pie = echarts.init(DOM.pie);
+// 获取父容器的宽度和高度
+const parentWidth = DOM.pie.parentNode.offsetWidth;
+const parentHeight =DOM.pie.parentNode.offsetHeight;
 
+// 计算边距（10%）
+const margin = 0.1;
+const leftMargin = parentWidth * margin;
+const topMargin = parentHeight * margin;
+const rightMargin = parentWidth * margin;
+const bottomMargin = parentHeight * margin;
 option = {
     title: {
         text: '数据情况统计',
         subtext: '',
-        left: 'right',
         textStyle: {
             color: '#fff',
             fontSize: 12
@@ -19,28 +27,23 @@ option = {
         formatter: '{a} <br/>{b} : {c} ({d}%)'
     },
     legend: {
-        // orient: 'vertical',
-        // top: 'middle',
         type: 'scroll',
         orient: 'vertical',
-        right: 10,
-        top: 40,
-        bottom: 20,
-        left: 'right',
-        data: ['西凉', '益州', '兖州', '荆州', '幽州'],
+        data: ['正常', '异常'],
         textStyle: {
             color: '#fff',
             fontSize: 12
         }
 
     },
-    grid:{
-        x:'-10%',
-        y:40,
-        x2:20,
-        y2:20,
+    grid: {
+        // 根据容器大小合理调整
+        left: leftMargin,
+        right: topMargin,
+        top: rightMargin,
+        bottom: bottomMargin
     },
-    color : [ '#09d0fb', '#f88cfb', '#95f8fe', '#f9f390',  '#ecfeb7' ],
+    color : [ '#0fff0f','#ff0f0f'],
     series: [
         {
             type: 'pie',
@@ -48,13 +51,8 @@ option = {
             center: ['50%', '50%'],
             selectedMode: 'single',
             data: [
-                {value: 1548, name: '幽州',
-
-        },
-                {value: 535, name: '荆州'},
-                {value: 510, name: '兖州'},
-                {value: 634, name: '益州'},
-                {value: 735, name: '西凉'}
+                {value: 1548, name: '正常',},
+                {value: 535, name: '异常'},
             ],
             emphasis: {
                 itemStyle: {
